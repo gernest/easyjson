@@ -615,8 +615,8 @@ func (r *Lexer) unsafeString() (string, []byte) {
 // Warning: returned string may point to the input buffer, so the string should not outlive
 // the input buffer. Intended pattern of usage is as an argument to a switch statement.
 func (r *Lexer) UnsafeString() string {
-	ret, _ := r.unsafeString()
-	return ret
+	_, b := r.unsafeString()
+	return string(b)
 }
 
 // UnsafeBytes returns the byte slice if the token is a string literal.
