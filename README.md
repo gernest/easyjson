@@ -1,4 +1,6 @@
-# easyjson [![Build Status](https://travis-ci.org/mailru/easyjson.svg?branch=master)](https://travis-ci.org/mailru/easyjson) [![Go Report Card](https://goreportcard.com/badge/github.com/gernest/easyjson)](https://goreportcard.com/report/github.com/gernest/easyjson)
+# easyjson for gopherjs
+
+__NOTE__ This is a modified fork to work with gopherjs
 
 Package easyjson provides a fast and easy way to marshal/unmarshal Go structs
 to/from JSON without the use of reflection. In performance tests, easyjson
