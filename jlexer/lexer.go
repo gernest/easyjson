@@ -6,9 +6,7 @@ package jlexer
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"strconv"
 	"unicode"
@@ -289,7 +287,7 @@ func getu4(s []byte) rune {
 // processEscape processes a single escape sequence and returns number of bytes processed.
 func (r *Lexer) processEscape(data []byte) (int, error) {
 	if len(data) < 2 {
-		return 0, fmt.Errorf("syntax error at %v", string(data))
+		return 0, errors.New("syntax error at " + string(data))
 	}
 
 	c := data[1]
@@ -435,7 +433,7 @@ func (r *Lexer) errInvalidToken(expected string) {
 			r.token.kind = tokenDelim
 		}
 		r.addNonfatalError(&LexerError{
-			Reason: fmt.Sprintf("expected %s", expected),
+			Reason: "expected " + expected,
 			Offset: r.start,
 			Data:   string(r.Data[r.start:r.pos]),
 		})
@@ -449,7 +447,7 @@ func (r *Lexer) errInvalidToken(expected string) {
 		str = string(r.token.byteValue[:maxErrorContextLen-3]) + "..."
 	}
 	r.fatalError = &LexerError{
-		Reason: fmt.Sprintf("expected %s", expected),
+		Reason: "expected " + expected,
 		Offset: r.pos,
 		Data:   str,
 	}
@@ -1048,25 +1046,41 @@ func (r *Lexer) GetNonFatalErrors() []*LexerError {
 	return r.multipleErrors
 }
 
+// A Number represents a JSON number literal.
+type Number string
+
+// String returns the literal text of the number.
+func (n Number) String() string { return string(n) }
+
+// Float64 returns the number as a float64.
+func (n Number) Float64() (float64, error) {
+	return strconv.ParseFloat(string(n), 64)
+}
+
+// Int64 returns the number as an int64.
+func (n Number) Int64() (int64, error) {
+	return strconv.ParseInt(string(n), 10, 64)
+}
+
 // JsonNumber fetches and json.Number from 'encoding/json' package.
 // Both int, float or string, contains them are valid values
-func (r *Lexer) JsonNumber() json.Number {
+func (r *Lexer) JsonNumber() Number {
 	if r.token.kind == tokenUndef && r.Ok() {
 		r.FetchToken()
 	}
 	if !r.Ok() {
 		r.errInvalidToken("json.Number")
-		return json.Number("0")
+		return Number("0")
 	}
 
 	switch r.token.kind {
 	case tokenString:
-		return json.Number(r.String())
+		return Number(r.String())
 	case tokenNumber:
-		return json.Number(r.Raw())
+		return Number(r.Raw())
 	default:
 		r.errSyntax()
-		return json.Number("0")
+		return Number("0")
 	}
 }
 

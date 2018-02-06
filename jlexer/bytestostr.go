@@ -3,7 +3,7 @@
 // for more details.
 
 //+build !easyjson_nounsafe
-//+build !appengine
+//+build !appengine,!gopherjs
 
 package jlexer
 

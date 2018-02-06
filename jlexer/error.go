@@ -1,6 +1,6 @@
 package jlexer
 
-import "fmt"
+import "strconv"
 
 // LexerError implements the error interface and represents all possible errors that can be
 // generated during parsing the JSON data.
@@ -11,5 +11,6 @@ type LexerError struct {
 }
 
 func (l *LexerError) Error() string {
-	return fmt.Sprintf("parse error: %s near offset %d of '%s'", l.Reason, l.Offset, l.Data)
+	return "parse error: " + l.Reason +
+		"near offset " + strconv.FormatInt(int64(l.Offset), 10) + "of '" + l.Data + "'"
 }
